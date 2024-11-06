@@ -1,13 +1,33 @@
 import statsapi
+from team import Team
+import pandas as pd
 
 # sched = statsapi.schedule(start_date='07/01/2018',end_date='07/31/2018',team=143,opponent=121)
-team_name = input("Team code? (abbrev. ex: sd): \n")
+user_in = input("Team code? (abbrev. ex: sd): \n")
 
-teams = statsapi.lookup_team(lookup_value=team_name)
+choice = statsapi.lookup_team(lookup_value=user_in)
 
-if len(teams) == 1:
-    print(f"The {teams[0]['name']} with the ID {teams[0]['id']}.\n")
+if len(choice) == 1:
+    print(f"The {choice[0]['name']} with the ID {choice[0]['id']}.\n")
+    team_id = choice[0]['id']
 else:
     print("Teams from that city are:\n")
-    for team in teams:
+    for team in choice:
         print(f"The {team['name']} with the ID {team['id']}.\n")
+
+    team_id = input("What is the team ID you want to look at?\n")
+
+choice = statsapi.lookup_team(lookup_value=team_id)[0]
+
+# The meta end point for the leader types, used for reference.
+# statsapi.meta(type="leagueLeaderTypes")
+
+name = choice['name']
+id = choice['id']
+city = choice['locationName']
+
+# Create the Team object using the team selected by the user. Initializes with name, id and City names.
+user_team = Team(name, id, city)
+
+user_team.hr_leaders()
+
