@@ -2,7 +2,10 @@ import statsapi
 from team import Team
 import pandas as pd
 
-# sched = statsapi.schedule(start_date='07/01/2018',end_date='07/31/2018',team=143,opponent=121)
+"""
+This works as the user interface, communicating with the Teams object to provide requested information from the API
+"""
+
 user_in = input("Team code? (abbrev. ex: sd): \n")
 
 choice = statsapi.lookup_team(lookup_value=user_in)
@@ -28,6 +31,5 @@ city = choice['locationName']
 
 # Create the Team object using the team selected by the user. Initializes with name, id and City names.
 user_team = Team(name, id, city)
-
 user_team.hr_leaders()
 
