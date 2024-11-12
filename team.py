@@ -23,7 +23,7 @@ class Team:
         self.id = id
         self.city = city
 
-        self.printer = PrintWindow()
+        # self.printer = PrintWindow()
 
     def help(self, type=None):
         """
@@ -47,13 +47,13 @@ class Team:
         else:
             statsapi.meta(type=type)
 
-    def hr_leaders(self, limit=10, plot=False):
+    def hr_leaders(self, limit=10, plot=False, df_return=False):
         """
         Prints a list of the HR Leaders based on the amount passed thru. Default is top 10
 
         :param limit: Default value = 10. How deep you want the list to be
                 plot: Boolean. If set to True, will show a plot of the HR leaders, Defualt = False.
-
+                df_return: If True, will return the data as a Pandas DF, instead of a printed statement.
         :return: Returns a usable Pandas DataFrame called hr_df
         """
 
@@ -85,7 +85,10 @@ class Team:
 
         print(hr_info)
 
-        return hr_df
+        if df_return:
+            return hr_df
+        else:
+            return hr_info
 
     def last_game(self):
         """
@@ -94,5 +97,4 @@ class Team:
         :return:
         """
         self.printer.print(statsapi.boxscore(gamePk=statsapi.last_game(self.id)))
-        self.printer.window.mainloop()
 
