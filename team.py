@@ -45,9 +45,9 @@ class Team:
             for type in meta_types:
                 print(f'{type}.')
         else:
-            statsapi.meta(type=type)
+            return statsapi.meta(type=type)
 
-    def hr_leaders(self, limit=10, plot=False, df_return=False):
+    def leader_lookup(self, limit=10, plot=False, stat="homeRuns", df_return=False):
         """
         Prints a list of the HR Leaders based on the amount passed thru. Default is top 10
 
@@ -57,15 +57,21 @@ class Team:
         :return: Returns a usable Pandas DataFrame called hr_df
         """
 
-        hr_info = statsapi.team_leaders(teamId=self.id, leaderCategories="homeRuns", limit=limit)
+        stat_info = statsapi.team_leaders(teamId=self.id, leaderCategories=stat, limit=limit)
+        usable = statsapi.team_leader_data(teamId=self.id, leaderCategories=stat, limit=limit)
 
-        usable = statsapi.team_leader_data(teamId=self.id, leaderCategories='homeRuns', limit=limit)
         names = []
         values = []
+
         for x in usable:
             names.append(x[1])
-            values.append(int(x[2]))
-            
+            try:
+                values.append(int(x[2]))
+            except:
+                values.append(float(x[2]))
+            finally:
+                values.append(str(x[2]))
+
         hr_df = pd.DataFrame(usable, columns=['Rank', 'Name', 'Value'])
 
         if plot:
@@ -77,18 +83,18 @@ class Team:
                 plt.text(i, value, player, ha='right', va='bottom', rotation=0, fontsize=11)
 
             plt.xlabel("Players")
-            plt.ylabel("HRs")
+            plt.ylabel(f"{type}")
             plt.xticks([])
             plt.yticks(list(range(0, max(values))))
-            plt.title(f'{self.name} HR Leaders')
+            plt.title(f'{self.name} {type}')
             plt.show()
 
-        print(hr_info)
+        print(stat_info)
 
         if df_return:
             return hr_df
         else:
-            return hr_info
+            return stat_info
 
     def last_game(self):
         """
