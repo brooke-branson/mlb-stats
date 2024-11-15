@@ -9,6 +9,12 @@ class StatsWindow:
         self.window = tk.Tk()
         self.window.title("Player Stats")
 
+        self.SELECTION_DICT = {
+            "home runs": "homeRuns",
+            "batting average": "battingAverage",
+            "total bases": "totalBases",
+                          }
+
         # This will contain the Team object one the .team_info function is called.
         self.user_team = None
 
@@ -37,10 +43,9 @@ class StatsWindow:
 
         # Create buttons for user actions
         self.hr_button = tk.Button(self.window, text="HR Leader Stats", command=self.show_hr_leader_stats)
-        self.hr_button.pack(side="left", padx=10, pady=5)
-
         self.batting_avg_button = tk.Button(self.window, text="Batting Average", command=self.show_batting_average)
-        self.batting_avg_button.pack(side="right", padx=10, pady=5)
+
+        self.selected_option = tk.StringVar(self.window)
 
     def team_info(self):
         """
@@ -61,6 +66,7 @@ class StatsWindow:
             self.city = choice[0]['locationName']
 
             self.user_team = Team(self.team_name, self.id, self.city)
+            self.enable_buttons()
 
         else:
 
@@ -102,11 +108,43 @@ class StatsWindow:
         self.team_id_entry.pack_forget()
         self.team_id_button.pack_forget()
 
+        self.enable_buttons()
+
     def show_hr_leader_stats(self):
         self.display_text(self.user_team.leader_lookup(limit=10, plot=False, stat="homeRuns"))
 
     def show_batting_average(self):
         self.display_text(self.user_team.leader_lookup(limit=10, plot=False, stat="battingAverage"))
+
+    def enable_buttons(self):
+        """
+        To be called once the user team Object is instantiated. Will toggle the visibility of the various stat buttons.
+
+        :return: Nothing
+        """
+
+        self.selected_option.set("Home Runs")  # Default value
+
+        # Create OptionMenu
+        options = ["Home Runs", "Batting Average", "Total Bases"]
+        dropdown = tk.OptionMenu(self.window, self.selected_option, *options)
+        dropdown.pack(side="left", pady=10)
+
+        self.selected_option.trace("w", self.on_select)
+        # self.hr_button.pack(side="left", padx=10, pady=5)
+        # self.batting_avg_button.pack(side="left", padx=10, pady=5)
+
+    def on_select(self, *args):
+        """
+        Runs the correct function for the selection in the drop down menu.
+
+        """
+        self.display_text(f"{self.selected_option.get()} Leaders:")
+        selection = self.selected_option.get().lower()
+        self.display_text(self.user_team.leader_lookup(limit=10, plot=False, stat=self.SELECTION_DICT[f"{selection}"]))
+
+
+
 
     def display_text(self, text):
         self.text_area.insert(tk.END, text + "\n")
