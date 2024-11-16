@@ -126,13 +126,14 @@ class StatsWindow:
         self.selected_option.set("Home Runs")  # Default value
 
         # Create OptionMenu
-        options = ["Home Runs", "Batting Average", "Total Bases"]
-        dropdown = tk.OptionMenu(self.window, self.selected_option, *options)
-        dropdown.pack(side="left", pady=10)
+        if not '!optionmenu' in self.window.children:
+            options = ["Home Runs", "Batting Average", "Total Bases"]
+            dropdown = tk.OptionMenu(self.window, self.selected_option, *options)
+            dropdown.pack(side="left", pady=10)
 
-        self.selected_option.trace("w", self.on_select)
-        # self.hr_button.pack(side="left", padx=10, pady=5)
-        # self.batting_avg_button.pack(side="left", padx=10, pady=5)
+        self.selected_option.trace_add("unset", self.on_select)
+            # self.hr_button.pack(side="left", padx=10, pady=5)
+            # self.batting_avg_button.pack(side="left", padx=10, pady=5)
 
     def on_select(self, *args):
         """
