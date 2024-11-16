@@ -9,11 +9,16 @@ class StatsWindow:
         self.window = tk.Tk()
         self.window.title("Player Stats")
 
+        # Dictionary for converting the options to something the API can use.
         self.SELECTION_DICT = {
             "home runs": "homeRuns",
             "batting average": "battingAverage",
             "total bases": "totalBases",
                           }
+        
+        # Options for the Drop-Down Menu.
+        self.options = ["Home Runs", "Batting Average", "Total Bases"]
+
 
         # This will contain the Team object one the .team_info function is called.
         self.user_team = None
@@ -41,11 +46,17 @@ class StatsWindow:
         self.team_id_entry = tk.Entry(self.window)
         self.team_id_button = tk.Button(self.window, text="Submit ID", command=self.process_team_id)
 
+
         # Create buttons for user actions
         self.hr_button = tk.Button(self.window, text="HR Leader Stats", command=self.show_hr_leader_stats)
         self.batting_avg_button = tk.Button(self.window, text="Batting Average", command=self.show_batting_average)
 
         self.selected_option = tk.StringVar(self.window)
+        self.menu_entry = tk.Button(self.window, text="Enter", command=self.on_select)
+        self.selected_option.set("Home Runs")  # Default value
+
+        self.dropdown = tk.OptionMenu(self.window, self.selected_option, *self.options)
+
 
     def team_info(self):
         """
@@ -123,17 +134,10 @@ class StatsWindow:
         :return: Nothing
         """
 
-        self.selected_option.set("Home Runs")  # Default value
+        self.dropdown.pack(side="left", pady=10)    # Show Option Menu
+        self.menu_entry.pack(side="left", pady=15)
 
-        # Create OptionMenu
-        if not '!optionmenu' in self.window.children:
-            options = ["Home Runs", "Batting Average", "Total Bases"]
-            dropdown = tk.OptionMenu(self.window, self.selected_option, *options)
-            dropdown.pack(side="left", pady=10)
-
-        self.selected_option.trace_add("unset", self.on_select)
-            # self.hr_button.pack(side="left", padx=10, pady=5)
-            # self.batting_avg_button.pack(side="left", padx=10, pady=5)
+        # self.selected_option.trace_add("read", self.on_select)
 
     def on_select(self, *args):
         """
