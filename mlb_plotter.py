@@ -46,16 +46,18 @@ class StatsWindow:
         self.team_id_entry = tk.Entry(self.window)
         self.team_id_button = tk.Button(self.window, text="Submit ID", command=self.process_team_id)
 
-
+        self.stats_frame = tk.Frame(self.window, bg="black")
         # Create buttons for user actions
-        self.hr_button = tk.Button(self.window, text="HR Leader Stats", command=self.show_hr_leader_stats)
-        self.batting_avg_button = tk.Button(self.window, text="Batting Average", command=self.show_batting_average)
+        self.hr_button = tk.Button(self.stats_frame, text="HR Leader Stats", command=self.show_hr_leader_stats)
+        self.batting_avg_button = tk.Button(self.stats_frame, text="Batting Average", command=self.show_batting_average)
 
-        self.selected_option = tk.StringVar(self.window)
-        self.menu_entry = tk.Button(self.window, text="Enter", command=self.on_select)
+        # Drop down menu for stat choices
+        self.selected_option = tk.StringVar(self.stats_frame)
+        self.menu_entry = tk.Button(self.stats_frame, text="Enter", command=self.on_select)
         self.selected_option.set("Home Runs")  # Default value
+        self.dropdown = tk.OptionMenu(self.stats_frame, self.selected_option, *self.options)
 
-        self.dropdown = tk.OptionMenu(self.window, self.selected_option, *self.options)
+        self.number_of_leaders = tk.Scale(self.stats_frame, from_=1, to=15, orient="horizontal")
 
 
     def team_info(self):
@@ -133,11 +135,14 @@ class StatsWindow:
 
         :return: Nothing
         """
+        self.stats_frame.pack(side="left")
+        # Show Options drop down menu and Entry button.
+        self.dropdown.grid(row=0, column=0)
+        self.menu_entry.grid(row=0, column=1)
 
-        self.dropdown.pack(side="left", pady=10)    # Show Option Menu
-        self.menu_entry.pack(side="left", pady=15)
+        # Shows the Numerical slider
+        self.number_of_leaders.grid(row=1, column=0)
 
-        # self.selected_option.trace_add("read", self.on_select)
 
     def on_select(self, *args):
         """
@@ -146,7 +151,7 @@ class StatsWindow:
         """
         self.display_text(f"{self.selected_option.get()} Leaders:")
         selection = self.selected_option.get().lower()
-        self.display_text(self.user_team.leader_lookup(limit=10, plot=False, stat=self.SELECTION_DICT[f"{selection}"]))
+        self.display_text(self.user_team.leader_lookup(limit=self.number_of_leaders.get(), plot=False, stat=self.SELECTION_DICT[f"{selection}"]))
 
 
 
