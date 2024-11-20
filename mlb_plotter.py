@@ -31,22 +31,35 @@ class StatsWindow:
         self.text_area = tk.Text(self.window)
         self.text_area.pack(expand=True, fill="both")
 
-        # Add an entry field for team input
-        self.team_label = tk.Label(self.window, text="Enter Team Name:")
-        self.team_label.pack(pady=5)
+        """
 
-        self.team_entry = tk.Entry(self.window)
+        User input frame. Will contain subframes for all the different menus
+
+        """
+        # ************* The Master Frame *************
+        self.user_interface = tk.Frame(self.window)
+        self.user_interface.pack(pady=5)
+
+        # ============= Team Choice Frame =============
+        self.team_frame = tk.Frame(self.user_interface)
+        self.team_frame.pack(padx=5)
+
+        # Add an entry field for team input
+        self.team_label = tk.Label(self.team_frame, text="Enter Team Name:")
+        self.team_label.pack(pady=5)
+        self.team_entry = tk.Entry(self.team_frame)
         self.team_entry.pack(pady=5)
 
         # Add an "Enter" button for the team name input
-        self.enter_team_button = tk.Button(self.window, text="Enter", command=self.team_info)
+        self.enter_team_button = tk.Button(self.team_frame, text="Enter", command=self.team_info)
         self.enter_team_button.pack(pady=5)
 
         # Entry field and button for team ID
-        self.team_id_entry = tk.Entry(self.window)
-        self.team_id_button = tk.Button(self.window, text="Submit ID", command=self.process_team_id)
+        self.team_id_entry = tk.Entry(self.team_frame)
+        self.team_id_button = tk.Button(self.team_frame, text="Submit ID", command=self.process_team_id)
 
-        self.stats_frame = tk.Frame(self.window, bg="black")
+        # ============= Creates the Frame to hold the Stats options =============
+        self.stats_frame = tk.Frame(self.user_interface)
         # Create buttons for user actions
         self.hr_button = tk.Button(self.stats_frame, text="HR Leader Stats", command=self.show_hr_leader_stats)
         self.batting_avg_button = tk.Button(self.stats_frame, text="Batting Average", command=self.show_batting_average)
@@ -58,6 +71,10 @@ class StatsWindow:
         self.dropdown = tk.OptionMenu(self.stats_frame, self.selected_option, *self.options)
 
         self.number_of_leaders = tk.Scale(self.stats_frame, from_=1, to=15, orient="horizontal")
+
+        # ============= Options menu Frame =============
+        self.options_frame = tk.Frame(self.user_interface)
+        self.help_button = tk.Button(self.options_frame, text="Help", command=self.on_help)
 
 
     def team_info(self):
@@ -136,12 +153,17 @@ class StatsWindow:
         :return: Nothing
         """
         self.stats_frame.pack(side="left")
+
         # Show Options drop down menu and Entry button.
         self.dropdown.grid(row=0, column=0)
         self.menu_entry.grid(row=0, column=1)
 
         # Shows the Numerical slider
         self.number_of_leaders.grid(row=1, column=0)
+
+        # Enables Help menu
+        self.options_frame.pack(side="right")
+        self.help_button.pack()
 
 
     def on_select(self, *args):
@@ -152,6 +174,10 @@ class StatsWindow:
         self.display_text(f"{self.selected_option.get()} Leaders:")
         selection = self.selected_option.get().lower()
         self.display_text(self.user_team.leader_lookup(limit=self.number_of_leaders.get(), plot=False, stat=self.SELECTION_DICT[f"{selection}"]))
+
+    def on_help(self):
+        # TODO Actually set this button to work, currently its just for reference to see meta data
+        print(self.user_team.help(type="leagueLeaderTypes"))
 
 
 
