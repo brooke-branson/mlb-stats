@@ -1,4 +1,5 @@
 import sys
+from Dependencies import stats
 
 import PySide6.QtCore
 from PySide6 import QtWidgets, QtCore
@@ -55,7 +56,6 @@ class StatsWindow(QtWidgets.QMainWindow):
 
 
         # ========== Buttons/Stats/Options Widget container ==========
-        # TODO: Connect button to a function
         input_layout = QtWidgets.QHBoxLayout()
         self.stats_widget = StatsDropDown()
         self.options_widget = Options(name="Clear")
@@ -108,16 +108,18 @@ class StatsWindow(QtWidgets.QMainWindow):
 
     def handle_help(self):
         # TODO Actually set this button to work, currently its just for reference to see meta data
-        meta_types = [
-                'leagueLeaderTypes', 'awards', 'baseballStats', 'eventTypes', 'gameStatus', 'gameTypes',
-                'hitTrajectories', 'jobTypes', 'languages', 'leagueLeaderTypes', 'logicalEvents', 'metrics',
-                'pitchCodes', 'pitchTypes', 'platforms', 'positions', 'reviewReasons', 'rosterTypes', 'windDirection',
-                'scheduleEventTypes', 'situationCodes', 'sky', 'standingsTypes', 'statGroups', 'statTypes'
-        ]
+        # meta_types = [
+        #         'leagueLeaderTypes', 'awards', 'baseballStats', 'eventTypes', 'gameStatus', 'gameTypes',
+        #         'hitTrajectories', 'jobTypes', 'languages', 'leagueLeaderTypes', 'logicalEvents', 'metrics',
+        #         'pitchCodes', 'pitchTypes', 'platforms', 'positions', 'reviewReasons', 'rosterTypes', 'windDirection',
+        #         'scheduleEventTypes', 'situationCodes', 'sky', 'standingsTypes', 'statGroups', 'statTypes'
+        # ]
         if True:
-            self.output_text_area.append("Available meta tags are:\n")
+            self.output_text_area.append("Available Leader Types are:\n")
+            meta_types = statsapi.meta(type="leagueLeaderTypes")
             for i in meta_types:
-                self.output_text_area.append(f'{i}.')
+                self.output_text_area.append(i["displayName"])
+            print(statsapi.meta(type="leagueLeaderTypes"))
 
     def handle_clear(self):
         self.output_text_area.clear()
@@ -159,20 +161,87 @@ class StatsDropDown(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         # Dictionary for converting the options to something the API can use.
+        self.options = stats.SELECTION_DICT
         self.SELECTION_DICT = {
             "home runs": "homeRuns",
             "batting average": "battingAverage",
             "total bases": "totalBases",
+            "assists": "assists",
+            "shut outs": "shutouts",
+            "sac bunts": "sacrificeBunts",
+            "sac flies": "sacrificeFlies",
+            "runs": "runs",
+            "ground to fly ratio": "groundoutToFlyoutRatio",
+            "stolen bases": "stolen:Bases",
+            "ground outs": "groundOuts",
+            "number of pitches": "numberOfPitches",
+            "obp": "onBasePercentage",
+            "caught stealing": "caughtStealing",
+            "gidp": "groundIntoDoublePlays",
+            "era":"earnedRunAverage",
+            "fielding percentage" :"fieldingPercentage",
+            "whip":"walksAndHitsPerInningPitched",
+            "flyouts":"flyouts",
+            "hbp":"hitByPitches",
+            "games played":"gamesPlayed",
+            "walks": "walks",
+            "slugging": "sluggingPercentage",
+            "obs": "onBasePlusSlugging",
+            "rbis": "runsBattedIn",
+            "triples": "triples",
+            "xbh": "extraBaseHits",
+            "hits": "hits",
+            "ab": "atBats",
+            "strike outs": "strikeouts",
+            "doubles": "doubles",
+            "total pa": "totalPlateAppearances",
+            "intentional walks": "intentionalWalks",
+            "wins": "wins",
+            "losses": "losses",
+            "saves": "saves",
+            "wild pitches": "wildPitch",
+            "air outs": "airOuts",
+            "balks": "balk",
+            "blown saves": "blownSaves",
+            "catcher era": "catcherEarnedRunAverage",
+            "catchers interferance": "catchersInterference",
+            "chances": "chances",
+            "complete games": "completeGames",
+            "double plays": "doublePlays",
+            "earned runs": "earnedRun",
+            "errors": "errors",
+            "games finishes": "gamesFinished",
+            "games started": "gamesStarted",
+            "hit batsman": "hitBatsman",
+            "hits per nine": "hitsPer9Inn",
+            "holds": "holds",
+            "innings": "innings",
+            "innings pitches": "inningsPitched",
+            "outfield assists": "outfieldAssists",
+            "passed balls": "passedBalls",
+            "pickoffs": "pickoffs",
+            "pitches per inning": "pitchesPerInning",
+            "put outs":  "putOuts",
+            "range factor per game": "rangeFactorPerGame",
+            "range factor per nine": "rangeFactorPer9Inn",
+            "save opportunities": "saveOpportunities",
+            "stolen base percentage": "stolenBasePercentage",
+            "strike outs per nine": "strikeoutsPer9Inn",
+            "strike out to walk ratio": "strikeoutWalkRatio",
+            "throwing errors": "throwingErrors",
+            "total batters faced": "totalBattersFaced",
+            "triple plays": "triplePlays",
+            "walks per nine": "walksPer9Inn",
+            "win percentage": "winPercentage",
                           }
 
         layout = QtWidgets.QVBoxLayout()  # Internal layout, keeps things vertical within this space
 
         # Define the dropdown box options, mostly stats
         self.dropDown = QtWidgets.QComboBox()
-        self.dropDown.addItems(["Home Runs", "Batting Average", "Total Bases"])
+        self.dropDown.addItems(stats.FORMATTED_STATS)
         layout.addWidget(self.dropDown)
 
-        # TODO:1 Add the stats calls depending on the option selected
         self.entryButton = QtWidgets.QPushButton("Select Stat")
         layout.addWidget(self.entryButton)
 
@@ -188,7 +257,7 @@ class StatsDropDown(QtWidgets.QWidget):
         then prints that message to the apps window text area.
         :return:
         """
-        selection = self.SELECTION_DICT[self.dropDown.currentText().lower()]
+        selection = self.options[self.dropDown.currentText().lower()]
         self.stat_selected.emit(selection)
 
 
