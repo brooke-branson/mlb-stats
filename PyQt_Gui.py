@@ -9,9 +9,14 @@ from team import Team
 class StatsWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        # Quick math to center on the viewport
+        screen = QtWidgets.QApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        x = (screen_geometry.width() - 1400) // 2
+        y = (screen_geometry.height() - 1200) // 2
 
         self.setWindowTitle("MLB Stats Application")
-        self.setGeometry(100, 100, 600, 400)
+        self.setGeometry(x, y, 1400, 1200)
 
         # This will contain the Team object one the .team_info function is called.
         self.user_team = None
@@ -53,9 +58,13 @@ class StatsWindow(QtWidgets.QMainWindow):
         # TODO: Connect button to a function
         input_layout = QtWidgets.QHBoxLayout()
         self.stats_widget = StatsDropDown()
-        self.options_widget = Options(name="Options")
+        self.options_widget = Options(name="Clear")
+        self.help_button = Options(name="Help")
+
         input_layout.addWidget(self.stats_widget)
         input_layout.addWidget(self.options_widget)
+        input_layout.addWidget(self.help_button)
+
 
         # Add Layout to main box
         main_box.addLayout(input_layout)
@@ -63,10 +72,14 @@ class StatsWindow(QtWidgets.QMainWindow):
         # Hides the UI widgets until a team is chosen.
         self.stats_widget.hide()
         self.options_widget.hide()
+        self.help_button.hide()
+
         self.user_interface.setLayout(main_box)
 
         # Signal Connections
         self.stats_widget.stat_selected.connect(self.handle_stat_selection)
+        self.options_widget.button_clicked_signal.connect(self.handle_clear)
+        self.help_button.button_clicked_signal.connect(self.handle_help)
 
     def team_info(self):
         choice = statsapi.lookup_team(lookup_value=self.user_input_box.text())
@@ -93,34 +106,56 @@ class StatsWindow(QtWidgets.QMainWindow):
 
         self.output_text_area.append(self.user_team.leader_lookup(limit=10, plot=False, stat=stat))
 
+    def handle_help(self):
+        # TODO Actually set this button to work, currently its just for reference to see meta data
+        meta_types = [
+                'leagueLeaderTypes', 'awards', 'baseballStats', 'eventTypes', 'gameStatus', 'gameTypes',
+                'hitTrajectories', 'jobTypes', 'languages', 'leagueLeaderTypes', 'logicalEvents', 'metrics',
+                'pitchCodes', 'pitchTypes', 'platforms', 'positions', 'reviewReasons', 'rosterTypes', 'windDirection',
+                'scheduleEventTypes', 'situationCodes', 'sky', 'standingsTypes', 'statGroups', 'statTypes'
+        ]
+        if True:
+            self.output_text_area.append("Available meta tags are:\n")
+            for i in meta_types:
+                self.output_text_area.append(f'{i}.')
+
+    def handle_clear(self):
+        self.output_text_area.clear()
 
     def enable_buttons(self):
 
         self.stats_widget.show()
         self.options_widget.show()
+        self.help_button.show()
 
 
 class Options(QtWidgets.QWidget):
+    button_clicked_signal = PySide6.QtCore.Signal(str)
+
     def __init__(self, name="placeholder"):
         super().__init__()
         layout = QtWidgets.QVBoxLayout()
 
         # Add a label and button
-        self.label = QtWidgets.QLabel(f"{name}:")
-        self.button = QtWidgets.QPushButton("Click Me - Widget One")
+        self.name = name
+        self.label = QtWidgets.QLabel(f"{self.name}:")
+        self.button = QtWidgets.QPushButton("Help")
         self.button.clicked.connect(self.button_clicked)
 
         layout.addWidget(self.label)
         layout.addWidget(self.button)
+
         self.setLayout(layout)
 
     def button_clicked(self):
         """ Perform the search based on the button clicked"""
-        window.output_text_area.append("Button clicked! Output updated.")
+
+        self.button_clicked_signal.emit(self.name)
 
 
 class StatsDropDown(QtWidgets.QWidget):
     stat_selected = PySide6.QtCore.Signal(str)
+
     def __init__(self):
         super().__init__()
         # Dictionary for converting the options to something the API can use.
