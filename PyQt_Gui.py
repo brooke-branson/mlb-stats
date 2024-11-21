@@ -1,4 +1,6 @@
 import sys
+
+import PySide6.QtCore
 from PySide6 import QtWidgets, QtCore
 import statsapi
 from team import Team
@@ -13,7 +15,6 @@ class StatsWindow(QtWidgets.QMainWindow):
 
         # This will contain the Team object one the .team_info function is called.
         self.user_team = None
-
         self.team_name = None
         self.id = None
         self.city = None
@@ -46,11 +47,13 @@ class StatsWindow(QtWidgets.QMainWindow):
 
         self.team_button.clicked.connect(self.team_info)
 
+
+
         # ========== Buttons/Stats/Options Widget container ==========
         # TODO: Connect button to a function
         input_layout = QtWidgets.QHBoxLayout()
         self.stats_widget = StatsDropDown()
-        self.options_widget = TeamInput(name="Options")
+        self.options_widget = Options(name="Options")
         input_layout.addWidget(self.stats_widget)
         input_layout.addWidget(self.options_widget)
 
@@ -62,7 +65,9 @@ class StatsWindow(QtWidgets.QMainWindow):
         self.options_widget.hide()
         self.user_interface.setLayout(main_box)
 
-    # Function to handle button click
+        # Signal Connections
+        self.stats_widget.stat_selected.connect(self.handle_stat_selection)
+
     def team_info(self):
         choice = statsapi.lookup_team(lookup_value=self.user_input_box.text())
         self.output_text_area.clear()
@@ -84,13 +89,18 @@ class StatsWindow(QtWidgets.QMainWindow):
 
         self.enable_buttons()
 
+    def handle_stat_selection(self, stat):
+
+        self.output_text_area.append(self.user_team.leader_lookup(limit=10, plot=False, stat=stat))
+
+
     def enable_buttons(self):
 
         self.stats_widget.show()
         self.options_widget.show()
 
 
-class TeamInput(QtWidgets.QWidget):
+class Options(QtWidgets.QWidget):
     def __init__(self, name="placeholder"):
         super().__init__()
         layout = QtWidgets.QVBoxLayout()
@@ -110,6 +120,7 @@ class TeamInput(QtWidgets.QWidget):
 
 
 class StatsDropDown(QtWidgets.QWidget):
+    stat_selected = PySide6.QtCore.Signal(str)
     def __init__(self):
         super().__init__()
         # Dictionary for converting the options to something the API can use.
@@ -137,10 +148,13 @@ class StatsDropDown(QtWidgets.QWidget):
         self.entryButton.clicked.connect(self.on_button_clicked)
 
     def on_button_clicked(self):
-        # TODO:1
+        """
+        Takes the selected option from the stats menu, converts that to a usable string for the mlb stats api,
+        then prints that message to the apps window text area.
+        :return:
+        """
         selection = self.SELECTION_DICT[self.dropDown.currentText().lower()]
-        window.output_text_area.append(window.user_team.leader_lookup(limit=10, plot=False, stat=selection))
-        pass
+        self.stat_selected.emit(selection)
 
 
 
