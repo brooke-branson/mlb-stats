@@ -72,21 +72,6 @@ class Team:
 
         hr_df = pd.DataFrame(usable, columns=['Rank', 'Name', 'Value'])
 
-        if plot:
-            plt.figure(figsize=(10, 5))  # Adjust figure size if needed
-            plt.plot(names, values, marker='o')
-
-            # Add text annotations for each point
-            for i, (player, value) in enumerate(zip(names, values)):
-                plt.text(i, value, player, ha='right', va='bottom', rotation=0, fontsize=11)
-
-            plt.xlabel("Players")
-            plt.ylabel(f"{type}")
-            plt.xticks([])
-            plt.yticks(list(range(0, max(values))))
-            plt.title(f'{self.name} {type}')
-            plt.show()
-
         print(stat_info)
 
         if df_return:
@@ -100,5 +85,7 @@ class Team:
 
         :return:
         """
-        print(statsapi.boxscore(gamePk=statsapi.last_game(self.id)))
+        last_game = statsapi.boxscore(gamePk=statsapi.last_game(self.id))
+
+        return last_game
 
