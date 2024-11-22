@@ -2,7 +2,6 @@ import statsapi
 import pandas as pd
 import matplotlib
 matplotlib.use('TkAgg')
-from print_window import PrintWindow
 import matplotlib.pyplot as plt
 
 class Team:
@@ -23,7 +22,6 @@ class Team:
         self.id = id
         self.city = city
 
-        # self.printer = PrintWindow()
 
     def help(self, type=None):
         """
@@ -102,5 +100,5 @@ class Team:
 
         :return:
         """
-        self.printer.print(statsapi.boxscore(gamePk=statsapi.last_game(self.id)))
+        print(statsapi.boxscore(gamePk=statsapi.last_game(self.id)))
 

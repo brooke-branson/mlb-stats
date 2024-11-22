@@ -1,6 +1,5 @@
 import sys
-from Dependencies import stats
-
+import utilities
 import PySide6.QtCore
 from PySide6 import QtWidgets, QtCore
 import statsapi
@@ -161,7 +160,7 @@ class StatsDropDown(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         # Dictionary for converting the options to something the API can use.
-        self.options = stats.SELECTION_DICT
+        self.options = utilities.SELECTION_DICT
         self.SELECTION_DICT = {
             "home runs": "homeRuns",
             "batting average": "battingAverage",
@@ -239,7 +238,7 @@ class StatsDropDown(QtWidgets.QWidget):
 
         # Define the dropdown box options, mostly stats
         self.dropDown = QtWidgets.QComboBox()
-        self.dropDown.addItems(stats.FORMATTED_STATS)
+        self.dropDown.addItems(utilities.FORMATTED_STATS)
         layout.addWidget(self.dropDown)
 
         self.entryButton = QtWidgets.QPushButton("Select Stat")
@@ -266,4 +265,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     window = StatsWindow()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
