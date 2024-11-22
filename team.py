@@ -85,5 +85,7 @@ class Team:
 
         :return:
         """
-        print(statsapi.boxscore(gamePk=statsapi.last_game(self.id)))
+        last_game = statsapi.boxscore(gamePk=statsapi.last_game(self.id))
+
+        return last_game
 
