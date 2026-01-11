@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# Build outputs
+dist/
+build/
+*.spec.bak
+
+# Distribution packages
+*.zip
+*.app
+*.exe
+MLB_Stats_Distribution/
+MLB_Stats_Source/
+MLB_Stats_Mac/
+
+# Build and packaging scripts (keep local only)
+build_windows.bat
+build_macos.sh
+install.bat
+uninstall.bat
+install_macos.sh
+create_distribution.bat
+package_for_mac.sh
+package_for_windows.sh
+
+# User-facing documentation (keep local only)
+README_FOR_USERS.md
+README_FOR_MAC_USERS.md
+SYSTEM_REQUIREMENTS.md
+INSTALLER_README.md
+PACKAGING_INSTRUCTIONS.md
+BUILD_FOR_WINDOWS.md
+WHAT_TO_SEND.md
+QUICK_START_WINDOWS.md
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log

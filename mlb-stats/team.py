@@ -18,7 +18,6 @@ class Team:
         :param city: City of the team
         """
         self.name = name
-        # self.nickname:
         self.id = id
         self.city = city
 
@@ -45,30 +44,22 @@ class Team:
         else:
             return statsapi.meta(type=type)
 
-    def leader_lookup(self, limit=10, plot=False, stat="homeRuns", df_return=False):
+    def leader_lookup(self, limit=10, plot=False, stat="homeRuns", df_return=False, season=None):
         """
         Prints a list of the HR Leaders based on the amount passed thru. Default is top 10
 
         :param limit: Default value = 10. How deep you want the list to be
                 plot: Boolean. If set to True, will show a plot of the HR leaders, Defualt = False.
                 df_return: If True, will return the data as a Pandas DF, instead of a printed statement.
+                season: Year/season to query. Defaults to current year if None.
         :return: Returns a usable Pandas DataFrame called hr_df
         """
+        from datetime import datetime
+        if season is None:
+            season = datetime.now().year
 
-        stat_info = statsapi.team_leaders(teamId=self.id, leaderCategories=stat, limit=limit)
-        usable = statsapi.team_leader_data(teamId=self.id, leaderCategories=stat, limit=limit)
-
-        names = []
-        values = []
-
-        for x in usable:
-            names.append(x[1])
-            try:
-                values.append(int(x[2]))
-            except:
-                values.append(float(x[2]))
-            finally:
-                values.append(str(x[2]))
+        stat_info = statsapi.team_leaders(teamId=self.id, leaderCategories=stat, limit=limit, season=str(season))
+        usable = statsapi.team_leader_data(teamId=self.id, leaderCategories=stat, limit=limit, season=str(season))
 
         hr_df = pd.DataFrame(usable, columns=['Rank', 'Name', 'Value'])
 
